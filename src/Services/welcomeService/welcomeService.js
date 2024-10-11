@@ -6,6 +6,9 @@ const { sendClientVerificationMessage } = require('../../whatsapp/sendVerifyClie
 const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMessage');
 const validateCNPJ = require('../../utils/validationCNPJ');
 
+const SUPPORT_EXPIRATION = 180
+
+
 const welcomeService = async (contact, text) => {
   try {
     switch (contact.step) {
@@ -13,7 +16,7 @@ const welcomeService = async (contact, text) => {
         await sendGreetingMessage(contact.phoneNumber);
         await sendClientVerificationMessage(contact.phoneNumber);
         contact.step = 'awaitClientVerification';
-        await redis.set(contact.whatsappId, JSON.stringify(contact));
+        await redis.set(contact.whatsappId, JSON.stringify(contact),'EX', SUPPORT_EXPIRATION);
         break;
 
       case 'awaitClientVerification':
@@ -24,7 +27,7 @@ const welcomeService = async (contact, text) => {
           await sendConsultorMessage(contact.phoneNumber);
           contact.step = 'completed';
         }
-        await redis.set(contact.whatsappId, JSON.stringify(contact));
+        await redis.set(contact.whatsappId, JSON.stringify(contact),'EX', SUPPORT_EXPIRATION);
         break;
 
         case 'awaitCNPJ':
@@ -38,7 +41,7 @@ const welcomeService = async (contact, text) => {
           } else {
             await sendInvalidCNPJMessage(contact.phoneNumber);
             contact.step = 'awaitCNPJ';
-            await redis.set(contact.whatsappId, JSON.stringify(contact));
+            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
           }
         
           break;
