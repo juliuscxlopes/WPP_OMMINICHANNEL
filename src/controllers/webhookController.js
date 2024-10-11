@@ -1,4 +1,4 @@
-const redis = require('../../redisClient');
+const redis = require('../redisClient');
 const welcomeService = require('../Services/welcomeService/welcomeService');
 const supportService = require('../Services/supportService/supportService');
 
