@@ -1,3 +1,4 @@
+const redis = require('../../redisClient');
 const welcomeService = require('../Services/welcomeService/welcomeService');
 const supportService = require('../Services/supportService/supportService');
 
@@ -8,6 +9,8 @@ const webhookController = async (req, res) => {
     switch (contact.step) {
       case '':
         await welcomeService(contact, text);
+        contact.step = 'welcome';
+        await redis.set(contact.whatsappId, JSON.stringify(contact));
         await supportService(req, res);
         break;
 
