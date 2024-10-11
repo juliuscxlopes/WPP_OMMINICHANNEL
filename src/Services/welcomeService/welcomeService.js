@@ -6,14 +6,25 @@ const { sendClientVerificationMessage } = require('../../whatsapp/sendVerifyClie
 const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMessage');
 const validateCNPJ = require('../../utils/validationCNPJ');
 
-const welcomeService = async (contact, text) => {
+const WELCOME_EXPIRATION = 180
+
+
+const welcomeService = async (req, res, next) => {
+  const { contact, text, type } = req.processedData;
+
+  if (type === 'message') {
+    console.log('Evento ignorado, pois não é uma mensagem.');
+    return;
+  }
+
   try {
     switch (contact.step) {
       case 'welcome':
+        console.log('Executando serviço de boas-vindas...');
         await sendGreetingMessage(contact.phoneNumber);
         await sendClientVerificationMessage(contact.phoneNumber);
         contact.step = 'awaitClientVerification';
-        await redis.set(contact.whatsappId, JSON.stringify(contact));
+        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         break;
 
       case 'awaitClientVerification':
@@ -24,7 +35,7 @@ const welcomeService = async (contact, text) => {
           await sendConsultorMessage(contact.phoneNumber);
           contact.step = 'completed';
         }
-        await redis.set(contact.whatsappId, JSON.stringify(contact));
+        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         break;
 
         case 'awaitCNPJ':
@@ -33,12 +44,12 @@ const welcomeService = async (contact, text) => {
           if (cnpjValid) {
             contact.step = 'supportService';
             // TODO: Chamar serviço para buscar na base de dados os dados do cliente.
-            await redis.set(contact.whatsappId, JSON.stringify(contact));
+            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         
           } else {
             await sendInvalidCNPJMessage(contact.phoneNumber);
             contact.step = 'awaitCNPJ';
-            await redis.set(contact.whatsappId, JSON.stringify(contact));
+            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
           }
         
           break;

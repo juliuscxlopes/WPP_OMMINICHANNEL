@@ -3,7 +3,7 @@ const redis = require('../../redisClient');
 const { createTicket } = require('../../API/millDeskApi/createTicket');
 const {sendConfirmationMessage, sendDescriptionMessage , sendAddTitleMessage} = require('../../whatsapp/sendSupportMessage');
 
-const WELCOME_EXPIRATION = 180
+const SUPPORT_EXPIRATION = 180
 
 const supportService = async (req, res, next) => {
   const { type } = req.processedData;
@@ -16,13 +16,13 @@ const supportService = async (req, res, next) => {
           case 'supportService':
               await sendAddTitleMessage(contact.phoneNumber);
               contact.step = 'awaitTitle';
-              await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+              await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
             break;
           case 'awaitTitle':
             contact.title = (text);
             await sendDescriptionMessage(contact.phoneNumber);
             contact.step = 'awaitSuport';
-            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
             break;
 
           case 'awaitSuport':
