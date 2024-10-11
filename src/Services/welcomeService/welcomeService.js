@@ -9,6 +9,13 @@ const WELCOME_EXPIRATION = 180;
 
 const welcomeService = async (contact, text) => {
   try {
+
+    // Log para verificar o objeto contact e o texto recebido
+    console.log('Iniciando serviço de boas-vindas...');
+    console.log('Contact:', contact); // Exibe o objeto inteiro
+    console.log('Text:', text); // Exibe o texto recebido
+    console.log('Contact Step:', contact.step); // Exibe o passo atual do fluxo
+
     // Verificar se estamos no passo de boas-vindas
     if (contact.step === 'welcome') {
       console.log('Executando serviço de boas-vindas...');
