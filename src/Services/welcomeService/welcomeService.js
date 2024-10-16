@@ -18,7 +18,7 @@ const welcomeService = async (contact, text) => {
     switch (contact.step) {
       case '':
         console.log('Executando serviço de boas-vindas...');
-        await sendGreetingMessage(contact.phoneNumber);
+        await sendGreetingMessage(contact);
         await sendClientVerificationMessage(contact.phoneNumber);
         contact.step = 'ClientVerification';
         await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
