@@ -9,7 +9,7 @@ const statusProcessor = require('../middleware/statusProcessor');
 
 
 // Middleware de processamento básico
-router.post('/', messageProcessor, statusProcessor, webhookController);
+router.post('/', messageProcessor, webhookController);
 
 // Rota para verificação do webhook
 router.get('/', verificationController.verifyWebhook);
