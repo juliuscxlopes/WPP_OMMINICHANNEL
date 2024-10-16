@@ -11,9 +11,11 @@ const webhookController = async (req, res) => {
   try {
     switch (contact.step) {
       case '':
-        await welcomeService(contact, text);
+
         contact.step = 'welcome';
+        await welcomeService(contact, text);
         await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WEBHOOK_EXPIRATION);
+        //atualizarStep.
         await supportService(req, res);
         break;
 
