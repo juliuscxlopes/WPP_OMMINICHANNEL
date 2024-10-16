@@ -7,6 +7,7 @@ const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMess
 const { validateCNPJ } = require('../../utils/validationCNPJ');
 
 const WELCOME_EXPIRATION = 180;
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const welcomeService = async (contact, text) => {
 
@@ -19,6 +20,7 @@ const welcomeService = async (contact, text) => {
       case '':
         console.log('Executando serviço de boas-vindas...');
         await sendGreetingMessage(contact);
+        await delay(1000);
         await sendClientVerificationMessage(contact.phoneNumber);
         contact.step = 'ClientVerification';
         contact.service = 'welcome'
