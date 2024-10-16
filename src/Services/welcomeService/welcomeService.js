@@ -1,10 +1,10 @@
 // src/Services/welcomeService/welcomeService.js
 const redis = require('../../redisClient');
 const sendGreetingMessage = require('../../whatsapp/sendGreetingMessage');
-const sendCNPJMessage = require('../../whatsapp/sendCNPJMessage');
+const {   sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
 const { sendClientVerificationMessage } = require('../../whatsapp/sendVerifyClienteMessage');
 const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMessage');
-const validateCNPJ = require('../../utils/validationCNPJ');
+const { validateCNPJ } = require('../../utils/validationCNPJ');
 
 const WELCOME_EXPIRATION = 180;
 
