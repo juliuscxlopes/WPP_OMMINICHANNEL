@@ -9,31 +9,25 @@ const webhookController = async (req, res) => {
   const { contact, text } = req.processedData;
 
   try {
+
+    if (text === 'Olá sou cliente Atomo e quero suporte') {
+
+      console.log("funcionou")
+      await welcomeService(contact);
+      return res.sendStatus(200); // Retorne após processar a mensagem de suporte
+    }
+
     switch (contact.service) {
-      case '':
-
-        await welcomeService(contact, text);
-
-        break;
 
       case 'welcome':
-
         await welcomeService(contact, text);
-
         break;
 
-        default:
-          if (text === 'Olá sou cliente Atomo e quero suporte') {
-            console.log('TODO:definir algoritimo.')
-            //await supportService(contact);
-          } else {
-            // Lógica futura para outros steps
-            console.log(`Mensagem não reconhecida: ${text}`);
-          }
-          break;
-      }
+      default:
+        await welcomeService(contact, text);
+        break;
     }
-   catch (error) {
+  } catch (error) {
     console.error('Erro ao processar o webhook:', /* error */);
   }
 

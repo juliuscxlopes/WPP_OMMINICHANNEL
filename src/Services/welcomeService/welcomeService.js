@@ -46,6 +46,7 @@ const welcomeService = async (contact, text) => {
         if (cnpjValid) {
 
           console.log('TODO:Chamaremos o serviço de suporte aqui!!!')
+          
 
           // Chamar serviço para buscar dados do cliente
         } else {
