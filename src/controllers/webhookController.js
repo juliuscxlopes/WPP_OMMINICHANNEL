@@ -22,12 +22,18 @@ const webhookController = async (req, res) => {
 
         break;
 
-
-      default:
-        // Lógica futura para outros steps
-        break;
+        default:
+          if (text === 'Olá sou cliente Atomo e quero suporte') {
+            console.log('TODO:definir algoritimo.')
+            //await supportService(contact);
+          } else {
+            // Lógica futura para outros steps
+            console.log(`Mensagem não reconhecida: ${text}`);
+          }
+          break;
+      }
     }
-  } catch (error) {
+   catch (error) {
     console.error('Erro ao processar o webhook:', /* error */);
   }
 
