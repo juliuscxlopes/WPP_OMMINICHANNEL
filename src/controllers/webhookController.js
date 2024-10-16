@@ -28,7 +28,7 @@ const webhookController = async (req, res) => {
         break;
     }
   } catch (error) {
-    console.error('Erro ao processar o webhook:', error);
+    console.error('Erro ao processar o webhook:', /* error */);
   }
 
   res.sendStatus(200); // Sempre retornamos status 200

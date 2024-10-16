@@ -22,6 +22,7 @@ const welcomeService = async (contact, text) => {
         await sendClientVerificationMessage(contact.phoneNumber);
         contact.step = 'ClientVerification';
         contact.service = 'welcome'
+        console.log('service e step atualizado no redis.. ')
         await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         break;
 
