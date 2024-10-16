@@ -32,6 +32,7 @@ const messageProcessor = async(req, res, next) => {
           name: name || '',
           phoneNumber: formattedPhoneNumber || '',
           whatsappId: whatsappId || '',
+          service: '',
           step: ''
         };
         redis.set(whatsappId,JSON.stringify(contact))

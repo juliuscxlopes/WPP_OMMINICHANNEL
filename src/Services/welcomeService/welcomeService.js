@@ -9,37 +9,45 @@ const validateCNPJ = require('../../utils/validationCNPJ');
 const WELCOME_EXPIRATION = 180;
 
 const welcomeService = async (contact, text) => {
+
   console.log('Iniciando serviço de boas-vindas...');
   console.log('Contact recuperado do Redis:', contact);
   console.log('Text recebido:', text);
 
   try {
     switch (contact.step) {
-      case 'welcome':
+      case '':
         console.log('Executando serviço de boas-vindas...');
         await sendGreetingMessage(contact.phoneNumber);
         await sendClientVerificationMessage(contact.phoneNumber);
-        contact.step = 'awaitClientVerification'; // Próximo passo definido
+        contact.step = 'ClientVerification';
+        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         break;
 
-      case 'awaitClientVerification':
+      case 'ClientVerification':
         if (text.toLowerCase() === 'sim') {
           await sendCNPJMessage(contact.phoneNumber);
-          contact.step = 'awaitCNPJ';
+          contact.step = 'CNPJ';
+          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         } else {
           await sendConsultorMessage(contact.phoneNumber);
           contact.step = 'completed';
+          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         }
+
         break;
 
-      case 'awaitCNPJ':
+      case 'CNPJ':
         const cnpjValid = await validateCNPJ(text);
         if (cnpjValid) {
-          contact.step = 'supportService';
+
+          console.log('TODO:Chamaremos o serviço de suporte aqui!!!')
+
           // Chamar serviço para buscar dados do cliente
         } else {
           await sendInvalidCNPJMessage(contact.phoneNumber);
-          contact.step = 'awaitCNPJ'; // Repetir até o CNPJ ser válido
+          contact.step = 'CNPJ';
+          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         }
         break;
 

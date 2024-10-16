@@ -9,17 +9,20 @@ const webhookController = async (req, res) => {
   const { contact, text } = req.processedData;
 
   try {
-    switch (contact.step) {
+    switch (contact.service) {
       case '':
 
-        contact.step = 'welcome';
         await welcomeService(contact, text);
-        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WEBHOOK_EXPIRATION);
-        //atualizarStep.
-        await supportService(req, res);
+
         break;
 
-      // Aqui você pode adicionar mais casos quando o step tiver um valor
+      case 'welcome':
+
+        await welcomeService(contact, text);
+
+        break;
+
+
       default:
         // Lógica futura para outros steps
         break;
