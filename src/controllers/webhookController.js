@@ -13,8 +13,9 @@ const webhookController = async (req, res) => {
     if (text === 'Olá sou cliente Atomo e quero suporte') {
 
       console.log("funcionou")
+      
       await welcomeService(contact);
-      return res.sendStatus(200); // Retorne após processar a mensagem de suporte
+      return res.sendStatus(200);
     }
 
     switch (contact.service) {

@@ -31,7 +31,8 @@ const messageProcessor = async(req, res, next) => {
         contact = {
           name: name || '',
           phoneNumber: formattedPhoneNumber || '',
-          whatsappId: whatsappId || '',
+          CNPJ: '',
+          email:'',
           service: '',
           step: ''
         };

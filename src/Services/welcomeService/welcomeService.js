@@ -26,12 +26,14 @@ const welcomeService = async (contact, text) => {
         contact.service = 'welcome'
         console.log('service e step atualizado no redis.. ')
         await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+
         break;
 
       case 'ClientVerification':
         if (text.toLowerCase() === 'sim') {
           await sendCNPJMessage(contact.phoneNumber);
           contact.step = 'CNPJ';
+          //TODO: adicionar no redis "CLIENTE"
           await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         } else {
           await sendConsultorMessage(contact.phoneNumber);
@@ -49,6 +51,7 @@ const welcomeService = async (contact, text) => {
           
 
           // Chamar serviço para buscar dados do cliente
+          //TODO: adicionar registro CNPJ no redis.. 
         } else {
           await sendInvalidCNPJMessage(contact.phoneNumber);
           contact.step = 'CNPJ';
