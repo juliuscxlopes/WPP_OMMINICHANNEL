@@ -1,26 +1,26 @@
 const redisClient = require('../redisClient'); // Supondo que já temos o redisClient configurado
 
 const createContactAtomo = async (req, res, next) => {
-    const { CNPJ, Nome, Email } = req.body;
+    const { nome, cnpj, email } = req.body;
 
-    if (!CNPJ || !Nome || !Email) {
+    if (!cnpj || !nome || !email) {
         return res.status(400).json({ error: 'CNPJ, Nome, and Email are required' });
     }
 
     try {
         // Criar o objeto de contato com as informações recebidas
         const contactWeb = {
-            name: Nome,
-            email: Email,
-            CNPJ: CNPJ,
+            name: nome,
+            email: email,
+            CNPJ: cnpj,
         };
 
         // Usar o CNPJ como chave no Redis (ou outro identificador que preferir)
-        await redisClient.set(CNPJ, JSON.stringify(contactWeb));
+        await redisClient.set(cnpj, JSON.stringify(contactWeb));
 
         console.log(`Contato criado no Redis: ${JSON.stringify(contactWeb)}`);
+        res.status(200).send('Contato criado com sucesso!');
 
-        // Continuar para o próximo middleware ou controller
         next();
 
     } catch (error) {
