@@ -24,14 +24,17 @@ const messageProcessor = async(req, res, next) => {
       const formattedPhoneNumber = formatPhoneNumber(message.from);
       const name = contacts ? contacts.profile.name : 'N/A';
       const whatsappId = contacts ? contacts.wa_id : 'N/A';
-      
+
       let contact = JSON.parse(await redis.get(whatsappId));
-      
+
       if (!contact) { 
         contact = {
           name: name || '',
           phoneNumber: formattedPhoneNumber || '',
           whatsappId: whatsappId || '',
+          CNPJ: '',
+          email:'',
+          service: '',
           step: ''
         };
         redis.set(whatsappId,JSON.stringify(contact))
@@ -58,7 +61,7 @@ const messageProcessor = async(req, res, next) => {
       } else {
         console.error('Message is missing or not of type text/button_reply in webhook changes');
       }
-    
+
     }
 
     next();

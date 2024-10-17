@@ -1,54 +1,60 @@
 // src/Services/welcomeService/welcomeService.js
 const redis = require('../../redisClient');
 const sendGreetingMessage = require('../../whatsapp/sendGreetingMessage');
-const sendCNPJMessage = require('../../whatsapp/sendCNPJMessage');
-const { sendClientVerificationMessage } = require('../../whatsapp/sendVerifyClienteMessage');
-const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMessage');
-const validateCNPJ = require('../../utils/validationCNPJ');
+const {   sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
+const { validateCNPJ } = require('../../utils/validationCNPJ');
 
-const SUPPORT_EXPIRATION = 180
-
+const WELCOME_EXPIRATION = 180;
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const welcomeService = async (contact, text) => {
+
+  console.log('Iniciando serviço de boas-vindas...');
+  console.log('Contact recuperado do Redis:', contact);
+  console.log('Text recebido:', text);
+
   try {
     switch (contact.step) {
-      case 'welcome':
-        await sendGreetingMessage(contact.phoneNumber);
-        await sendClientVerificationMessage(contact.phoneNumber);
-        contact.step = 'awaitClientVerification';
-        await redis.set(contact.whatsappId, JSON.stringify(contact),'EX', SUPPORT_EXPIRATION);
+      case '':
+        console.log('Executando serviço de boas-vindas...');
+        await sendGreetingMessage(contact);
+        await delay(1000);
+        await sendCNPJMessage(contact.phoneNumber);
+        contact.step = 'CNPJ';
+        contact.service = 'welcome'
+        console.log('service e step atualizado no redis.. ')
+        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+
         break;
 
-      case 'awaitClientVerification':
-        if (text.toLowerCase() === 'sim') {
-          await sendCNPJMessage(contact.phoneNumber);
-          contact.step = 'awaitCNPJ';
-        } else {
-          await sendConsultorMessage(contact.phoneNumber);
-          contact.step = 'completed';
-        }
-        await redis.set(contact.whatsappId, JSON.stringify(contact),'EX', SUPPORT_EXPIRATION);
-        break;
+      case 'CNPJ':
+        const cnpjValid = await validateCNPJ(text);
+        if (cnpjValid) {
+          // O CNPJ é válido, chamamos o serviço integrateContact
+          const updatedContact = await integrateContact(text, contact);
 
-        case 'awaitCNPJ':
-          const cnpjValid = await validateCNPJ(text); // Valida o CNPJ
-        
-          if (cnpjValid) {
-            contact.step = 'supportService';
-            // TODO: Chamar serviço para buscar na base de dados os dados do cliente.
-            await redis.set(contact.whatsappId, JSON.stringify(contact));
-        
+          if (updatedContact) {
+              console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
+              
+              // Aqui podemos direcionar para o próximo serviço (ex: serviço de suporte ou próximo passo)
+              // Exemplo:
+              console.log('TODO: Chamaremos o serviço de suporte ou outro serviço aqui!');
           } else {
-            await sendInvalidCNPJMessage(contact.phoneNumber);
-            contact.step = 'awaitCNPJ';
-            await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
+              console.log('Nenhum contato correspondente ao CNPJ encontrado no Redis.');
           }
-        
-          break;
-        
+        } else {
+          await sendInvalidCNPJMessage(contact.phoneNumber);
+          contact.step = 'CNPJ';
+          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+        }
+        break;
+
       default:
         console.log('Passo não reconhecido no fluxo de boas-vindas:', contact.step);
     }
+
+    await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+    console.log('Status atualizado no Redis:', contact.step);
   } catch (error) {
     console.error('Erro no serviço de boas-vindas:', error);
     throw error;

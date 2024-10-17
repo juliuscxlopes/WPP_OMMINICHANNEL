@@ -13,5 +13,17 @@ function validatePhoneNumber(phoneNumber) {
     return re.test(phoneNumber);
 }
 
+function removeExtraNine(phoneNumber) {
+    // Verifica se o número começa com '55319' e tem 13 dígitos (incluindo o '9' extra)
+    if (phoneNumber.startsWith('55319') && phoneNumber.length === 13) {
+        // Remove o dígito '9' que está após o código de área
+        const formatted = phoneNumber.slice(0, 4) + phoneNumber.slice(5);
+        return formatted;
+    }
+}
 
-module.exports = { formatPhoneNumber , validatePhoneNumber };
+
+module.exports = { formatPhoneNumber , validatePhoneNumber, removeExtraNine };
+
+
+
