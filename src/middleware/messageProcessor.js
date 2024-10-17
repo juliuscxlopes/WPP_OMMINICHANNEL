@@ -1,73 +1,45 @@
-// middleware/messageProcessor.js
-const { setProcessedData } = require('../utils/processWebhookData');
-const { formatPhoneNumber } = require('../utils/phoneUtils');
 const redis = require('../redisClient');
+const { removeExtraNine } = require('../utils/phoneUtils'); // Importa a função que remove o dígito extra
 
+const integrateContactWithRetry = async (req, res, next) => {
+    const { phoneNumber, CNPJ, Nome, Email } = req.body; // Supondo que esses dados vêm no corpo da requisição
 
-const messageProcessor = async(req, res, next) => {
-  try {
-    const entry = req.body.entry && req.body.entry[0];
-    if (!entry) {
-      console.error('Webhook entry is missing');
-      return next();
+    if (!phoneNumber) {
+        return res.status(400).json({ error: 'phoneNumber is required' });
     }
 
-    const changes = entry.changes && entry.changes[0];
-    if (!changes) {
-      console.error('Webhook changes are missing');
-      return next();
-    }
+    let attempts = 0;
+    let contactData;
 
-    const message = changes.value.messages && changes.value.messages[0];
-    if (message) {
-      const contacts = changes.value.contacts && changes.value.contacts[0];
-      const formattedPhoneNumber = formatPhoneNumber(message.from);
-      const name = contacts ? contacts.profile.name : 'N/A';
-      const whatsappId = contacts ? contacts.wa_id : 'N/A';
-      
-      let contact = JSON.parse(await redis.get(whatsappId));
-      
-      if (!contact) { 
-        contact = {
-          name: name || '',
-          phoneNumber: formattedPhoneNumber || '',
-          CNPJ: '',
-          email:'',
-          service: '',
-          step: ''
-        };
-        redis.set(whatsappId,JSON.stringify(contact))
-        console.log('criando atendimento')
-      }
-      else {
-        console.log('atendimento existente')
-      }
+    const formattedPhoneNumber = removeExtraNine(phoneNumber);
+    const whatsappId = `whatsapp:${formattedPhoneNumber}`;
 
-      if (message.type === 'text') {
-        setProcessedData(req, {
-          type: 'message',
-          contact: contact,
-          text: message.text && message.text.body ? message.text.body : 'N/A',
-          timestamp: new Date().toISOString()
-        });
-      } else if (message.type === 'interactive' && message.interactive.type === 'button_reply') {
-        setProcessedData(req, {
-          type: 'message',
-          contact: contact,
-          text: message.interactive.button_reply.id || 'N/A',
-          timestamp: new Date().toISOString()
-        });
-      } else {
-        console.error('Message is missing or not of type text/button_reply in webhook changes');
-      }
-    
-    }
+    const fetchContact = async () => {
+        attempts++;
+        contactData = await redis.get(whatsappId);
 
-    next();
-  } catch (error) {
-    console.error('Error processing message webhook:', error);
-    next();
-  }
+        if (contactData) {
+            contactData = JSON.parse(contactData);
+
+            contactData.CNPJ = CNPJ;
+            contactData.Nome = Nome;
+            contactData.Email = Email;
+
+            await redis.set(whatsappId, JSON.stringify(contactData));
+
+            // Avança para o próximo middleware ou controlador
+            return next();
+        } else if (attempts < 5) {
+            // Se não encontrou o contato, tenta novamente até 5 vezes
+            setTimeout(fetchContact, 1000); // Aguarda 1 segundo antes de tentar novamente
+        } else {
+            // Caso tenha excedido o número máximo de tentativas
+            return res.status(404).json({ error: 'Contact not found after multiple attempts' });
+        }
+    };
+
+    // Inicia a busca pelo contato
+    fetchContact();
 };
 
-module.exports = messageProcessor;
+module.exports = { integrateContactWithRetry };

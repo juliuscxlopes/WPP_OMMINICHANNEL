@@ -5,11 +5,11 @@ const MAX_ATTEMPTS = 5;  // Máximo de tentativas
 const RETRY_INTERVAL = 2000;  // Intervalo entre tentativas em milissegundos (1 segundo)
 
 const integrateContactWithRetry = async (req, res, next) => {
-  const { phoneNumber, CNPJ, Nome, Email } = req.body; // Supondo que esses dados vêm no corpo da requisição
+    const { phoneNumber, CNPJ, Nome, Email } = req.body; // Supondo que esses dados vêm no corpo da requisição
 
-  if (!phoneNumber) {
-    return res.status(400).json({ error: 'phoneNumber is required' });
-  }
+    if (!phoneNumber) {
+        return res.status(400).json({ error: 'phoneNumber is required' });
+    }
 
   let attempts = 0;
   let contactData;
