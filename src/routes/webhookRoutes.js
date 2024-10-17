@@ -6,7 +6,7 @@ const { supportService } = require('../Services/supportService/supportService');
 const verificationController  = require('../controllers/verificationController');
 const messageProcessor = require('../middleware/messageProcessor');
 const statusProcessor = require('../middleware/statusProcessor');
-const integrateContact = require('../middleware/integrateContact');
+const integrateContactWithRetry = require('../middleware/integrateContact');
 
 // Middleware de processamento básico
 router.post('/', messageProcessor, statusProcessor, webhookController);
