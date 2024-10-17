@@ -32,3 +32,5 @@ const integrateContact = async (text, contact) => {
         throw error;
     }
 };
+
+module.exports = { integrateContact };

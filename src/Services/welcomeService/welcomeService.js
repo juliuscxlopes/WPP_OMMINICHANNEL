@@ -3,6 +3,8 @@ const redis = require('../../redisClient');
 const sendGreetingMessage = require('../../whatsapp/sendGreetingMessage');
 const {   sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
 const { validateCNPJ } = require('../../utils/validationCNPJ');
+const { integrateContact } = require('../welcomeService/integrateContact')
+
 
 const WELCOME_EXPIRATION = 180;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -35,10 +37,8 @@ const welcomeService = async (contact, text) => {
 
           if (updatedContact) {
               console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
-              
-              // Aqui podemos direcionar para o próximo serviço (ex: serviço de suporte ou próximo passo)
-              // Exemplo:
               console.log('TODO: Chamaremos o serviço de suporte ou outro serviço aqui!');
+
           } else {
               console.log('Nenhum contato correspondente ao CNPJ encontrado no Redis.');
           }
