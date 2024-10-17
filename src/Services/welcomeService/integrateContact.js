@@ -1,7 +1,10 @@
+const redis = require('../../redisClient');
+
+
 const integrateContact = async (text, contact) => {
     try {
         // Tentar buscar o contato web relacionado ao CNPJ (text) no Redis
-        const contactWeb = await redisClient.get(text);
+        const contactWeb = await redis.get(text);
 
         if (contactWeb) {
             // Se encontrar o contactWeb, faz o parse do JSON
@@ -13,12 +16,12 @@ const integrateContact = async (text, contact) => {
             contact.email = parsedContactWeb.email || contact.email;
 
             // Atualizar o contato completo no Redis com o whatsappId como chave
-            await redisClient.set(contact.whatsappId, JSON.stringify(contact));
+            await redis.set(contact.whatsappId, JSON.stringify(contact));
 
             console.log(`Contato atualizado no Redis: ${JSON.stringify(contact)}`);
 
             // Excluir o registro contactWeb do Redis
-            await redisClient.del(text);
+            await redis.del(text);
 
             console.log(`Registro contactWeb para o CNPJ ${text} removido do Redis.`);
 

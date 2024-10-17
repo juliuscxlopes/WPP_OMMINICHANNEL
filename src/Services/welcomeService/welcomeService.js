@@ -10,7 +10,7 @@ const WELCOME_EXPIRATION = 180;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const welcomeService = async (contact, text) => {
-
+  
   console.log('Iniciando serviço de boas-vindas...');
   console.log('Contact recuperado do Redis:', contact);
   console.log('Text recebido:', text);
@@ -32,6 +32,7 @@ const welcomeService = async (contact, text) => {
       case 'CNPJ':
         const cnpjValid = await validateCNPJ(text);
         if (cnpjValid) {
+          console.log('CNPJ VALIDO')
           // O CNPJ é válido, chamamos o serviço integrateContact
           const updatedContact = await integrateContact(text, contact);
 
