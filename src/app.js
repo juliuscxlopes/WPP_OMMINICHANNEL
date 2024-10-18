@@ -19,5 +19,5 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
     
     // Inicia o worker do RabbitMQ
-   /*  processQueue(); */ // Chama a função para iniciar a fila
+    processQueue(); // Chama a função para iniciar a fila
 });

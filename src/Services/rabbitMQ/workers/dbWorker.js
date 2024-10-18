@@ -1,4 +1,4 @@
-/* // srtc/services/rabbitMQ/workers/dbworker.js
+// srtc/services/rabbitMQ/workers/dbworker.js
 
 const { getRabbitMQChannel } = require('../config/rabbitMQ');
 const { dbQueue } = require('../config/queues');
@@ -22,30 +22,19 @@ async function processQueue() {
                 try {
                     const dbEndpoint = process.env.DB_ENDPOINT;
 
-                    // Organizando o objeto a ser enviado para o banco de dados
-                    const email = contact.email;
+                    const nameContact = contact.nameContact;
+                    const phoneNumber = contact.phoneNumber;
+                    const name = contact.name;
+                    const cnpj = contact.CNPJ;
+                    const email = contact.email
                     const title = contact.title;
                     const description = contact.description;
-                    const additionalInfo =
-                        `Chamado aberto por: ${contact.nameContact}` +
-                        `Telefone da Abertura: ${contact.phoneNumber}` +
-                        `Empresa: ${contact.name}` +
-                        `CNPJ: ${contact.CNPJ}`;
-
-                    // Exibir o objeto que será enviado ao banco de dados
-                    console.log('Enviando dados para o banco:', {
-                        email: email,
-                        title: title,
-                        description: description,
-                        additionalInfo: additionalInfo
-                    });
 
                     // Enviar as informações organizadas
                     const response = await axios.post(dbEndpoint, {
                         email: email,
                         title: title,
                         description: description,
-                        additionalInfo: additionalInfo
                     });
 
                     console.log('Dados enviados com sucesso para o banco:', response.data);
@@ -68,4 +57,3 @@ async function processQueue() {
 }
 
 module.exports = { processQueue };
- */
