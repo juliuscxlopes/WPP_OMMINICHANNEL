@@ -20,7 +20,8 @@ const welcomeService = async (contact, text) => {
           console.log('Aqui devemos ter outra verificação de CNPJ à base de clientes.. ')
           //chamar outra verificação de CNPJ para objter dados.. 
           if (updatedContact) {
-              console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
+              //TODO: Verificar e-mail na milldesk, se existe solicitante dele.. 
+              console.log('Contato integrado com sucesso! Iniciando Serviço de Support');
               contact.step = 'supportService';
               contact.service = 'Support';
               await supportService(contact, text);
