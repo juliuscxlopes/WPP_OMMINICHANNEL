@@ -10,8 +10,6 @@ const WELCOME_EXPIRATION = 180;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const welcomeService = async (contact, text) => {
-  
-  console.log('Iniciando serviço de boas-vindas...');
   try {
     switch (contact.step) {
       case 'CNPJ':
