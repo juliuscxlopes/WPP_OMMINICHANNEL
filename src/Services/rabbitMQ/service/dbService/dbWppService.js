@@ -7,19 +7,11 @@ async function sendToQueue(contact) {
     try {
         const channel = await getDBChannel();
         
-        const message = {
-            nameContact: contact.nameContact,
-            phoneNumber: contact.phoneNumber,
-            name: contact.name,
-            cnpj: contact.CNPJ,
-            email: contact.email,
-            title: contact.title,
-            description: contact.description    
-        };
+
         
-        const sent = channel.sendToQueue(dbQueue.name, Buffer.from(JSON.stringify(message)), { persistent: true });
+        const sent = channel.sendToQueue(dbQueue.name, Buffer.from(JSON.stringify(contact)), { persistent: true });
         if (sent) {
-            console.log('Mensagem enviada para a fila com sucesso:', message);
+            console.log('Mensagem enviada para a fila com sucesso:', contact);
         } else {
             console.error('Falha ao enviar a mensagem para a fila.');
         }

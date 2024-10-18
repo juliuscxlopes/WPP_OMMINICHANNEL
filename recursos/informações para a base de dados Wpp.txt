@@ -1,0 +1,19 @@
+            nameContact: contact.nameContact,
+            phoneNumber: contact.phoneNumber,
+            name: contact.name,
+            cnpj: contact.CNPJ,
+            email: contact.email,
+            title: contact.title,
+            description: contact.description    
+        };
+
+
+
+whatsapp SuportCase para o banco de dados.. armazenar informações.. 
+
+
+
+ainda falta informações para a criação da base de dados de supportChatBot. 
+
+	- Attendente.
+	- conversa com atendente.

@@ -1,0 +1,5 @@
+- planilha lazaro
+	- adicionar um e-mail fictício a todos os registro de empresas..
+	- fazer a importação desses solicitantes para os CNPJ listados.
+	- validar se vamos conseguir abrir ticket no 'local" correto na milldesk
+ 
