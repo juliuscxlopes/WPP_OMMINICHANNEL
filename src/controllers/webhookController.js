@@ -22,11 +22,13 @@ const webhookController = async (req, res) => {
       default:
         await welcomeService(contact, text);
         break;
+
+
     }
   } catch (error) {
     console.error('Erro ao processar o webhook:', /* error */);
   }
-
+  console.log('encerrando o ciclo')
   res.sendStatus(200);
 };
 
