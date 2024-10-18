@@ -1,73 +1,51 @@
 // src/Services/welcomeService/welcomeService.js
 const redis = require('../../redisClient');
 const sendGreetingMessage = require('../../whatsapp/sendGreetingMessage');
-const {   sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
-const { sendClientVerificationMessage } = require('../../whatsapp/sendVerifyClienteMessage');
-const { sendConsultorMessage } = require('../../whatsapp/sendConsultorVendasMessage');
+const { sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
 const { validateCNPJ } = require('../../utils/validationCNPJ');
+const { integrateContact } = require('../welcomeService/integrateContact')
+
 
 const WELCOME_EXPIRATION = 180;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const welcomeService = async (contact, text) => {
-
+  
   console.log('Iniciando serviço de boas-vindas...');
-  console.log('Contact recuperado do Redis:', contact);
-  console.log('Text recebido:', text);
-
   try {
     switch (contact.step) {
-      case '':
-        console.log('Executando serviço de boas-vindas...');
-        await sendGreetingMessage(contact);
-        await delay(1000);
-        await sendClientVerificationMessage(contact.phoneNumber);
-        contact.step = 'ClientVerification';
-        contact.service = 'welcome'
-        console.log('service e step atualizado no redis.. ')
-        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
-
-        break;
-
-      case 'ClientVerification':
-        if (text.toLowerCase() === 'sim') {
-          await sendCNPJMessage(contact.phoneNumber);
-          contact.step = 'CNPJ';
-          //TODO: adicionar no redis "CLIENTE"
-          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
-        } else {
-          await sendConsultorMessage(contact.phoneNumber);
-          contact.step = 'completed';
-          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
-        }
-
-        break;
-
       case 'CNPJ':
         const cnpjValid = await validateCNPJ(text);
         if (cnpjValid) {
+          const updatedContact = await integrateContact(text, contact);
 
-          console.log('TODO:Chamaremos o serviço de suporte aqui!!!')
-          
-
-          // Chamar serviço para buscar dados do cliente
-          //TODO: adicionar registro CNPJ no redis.. 
+          if (updatedContact) {
+              console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
+              contact.step = '';
+              contact.service = 'supportService';
+              await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
+          } else {
+              console.log('Nenhum contato correspondente ao CNPJ encontrado no Redis.');
+          }
         } else {
           await sendInvalidCNPJMessage(contact.phoneNumber);
-          contact.step = 'CNPJ';
-          await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
         }
         break;
 
       default:
-        console.log('Passo não reconhecido no fluxo de boas-vindas:', contact.step);
+        console.log('Executando serviço de boas-vindas...');
+        await sendGreetingMessage(contact);
+        await delay(1000);
+        await sendCNPJMessage(contact.phoneNumber);
+        contact.step = 'CNPJ';
+        contact.service = 'welcome'
+        console.log('service e step atualizado no redis.. ')
+        await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
     }
+    console.log('Fluxo de Boas-Vindas encerrou', contact);
 
-    // Atualizar o Redis com o status mais recente
-    await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
-    console.log('Status atualizado no Redis:', contact.step);
   } catch (error) {
-    console.error('Erro no serviço de boas-vindas:', error);
+    console.error('Erro no Fluxo de boas-vindas:', error);
     throw error;
   }
 };
