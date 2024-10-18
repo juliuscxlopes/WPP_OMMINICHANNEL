@@ -17,7 +17,8 @@ const welcomeService = async (contact, text) => {
         const cnpjValid = await validateCNPJ(text);
         if (cnpjValid) {
           const updatedContact = await integrateContact(text, contact);
-
+          console.log('Aqui devemos ter outra verificação de CNPJ à base de clientes.. ')
+          //chamar outra verificação de CNPJ para objter dados.. 
           if (updatedContact) {
               console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
               contact.step = 'supportService';
