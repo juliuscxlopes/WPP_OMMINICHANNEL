@@ -1,7 +1,7 @@
 // srtc/services/rabbitMQ/workers/attendantWorker.js
 
-const { getDBChannel } = require('../../config/rabbitMQ');
-const attendantsQueue = require('../../config/queues').attendantsQueue;
+const { getDBChannel } = require('../../rabbitMQ/config/rabbitMQ');
+const attendantsQueue = require('../../rabbitMQ/config/queues').attendantsQueue;
 const axios = require('axios');
 
 const DB_API_URL = process.env.DB_API_URL || 'http://localhost:3000'; 
