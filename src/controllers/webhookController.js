@@ -13,6 +13,9 @@ const webhookController = async (req, res) => {
     switch (contact.service) {
       case 'welcome':
         await welcomeService(contact, text);
+        break;
+
+      case 'Support':
         await supportService(contact, text);
         break;
 
