@@ -44,4 +44,4 @@ async function processQueue() {
     }
 }
 
-processQueue();
+module.exports = { processQueue };
