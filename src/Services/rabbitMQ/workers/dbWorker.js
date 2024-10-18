@@ -1,12 +1,12 @@
 // srtc/services/rabbitMQ/workers/dbworker.js
 
-const { getRabbitMQChannel } = require('../config/rabbitMQ');
+const { getDBChannel } = require('../../rabbitMQ/config/rabbitMQ');
 const { dbQueue } = require('../config/queues');
 const axios = require('axios');
 
 async function processQueue() {
     try {
-        const channel = await getRabbitMQChannel();
+        const channel = await getDBChannel();
 
         // Certificar-se de que a fila existe usando a configuração centralizada
         await channel.assertQueue(dbQueue.name, dbQueue.options);
@@ -22,13 +22,8 @@ async function processQueue() {
                 try {
                     const dbEndpoint = process.env.DB_ENDPOINT;
 
-                    const nameContact = contact.nameContact;
-                    const phoneNumber = contact.phoneNumber;
-                    const name = contact.name;
-                    const cnpj = contact.CNPJ;
-                    const email = contact.email
-                    const title = contact.title;
-                    const description = contact.description;
+                    // Extraindo os dados do contato
+                    const { nameContact, phoneNumber, name, CNPJ, email, title, description } = contact;
 
                     // Enviar as informações organizadas
                     const response = await axios.post(dbEndpoint, {

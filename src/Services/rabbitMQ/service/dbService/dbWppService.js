@@ -1,15 +1,12 @@
-//srtc/services/rabbitMQ/service/dbService/dbWppService.js
+// srtc/services/rabbitMQ/service/dbService/dbWppService.js
 
-const { getRabbitMQChannel } = require('../../config/rabbitMQ');
-const dbQueue  = require('../../config/queues');
+const { getDBChannel } = require('../../config/rabbitMQ');
+const dbQueue = require('../../config/queues').dbQueue; // Certifique-se de importar corretamente
 
 async function sendToQueue(contact) {
     try {
-        const channel = await getRabbitMQChannel();
-        await channel.assertQueue(dbQueue.name, dbQueue.options);
-        console.log(channel)
-
-
+        const channel = await getDBChannel();
+        
         const message = {
             nameContact: contact.nameContact,
             phoneNumber: contact.phoneNumber,
