@@ -31,7 +31,7 @@ const supportService = async (contact, text) => {
             await sendToQueue(contact); // Enviar para a fila da base de dados
             
 
-            await redis.del(contact.whatsappId);
+            //await redis.del(contact.whatsappId);
             
         }
 
