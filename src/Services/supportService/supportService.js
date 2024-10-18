@@ -2,7 +2,7 @@
 const redis = require('../../redisClient');
 const { createTicket } = require('../../API/millDeskApi/createTicket');
 const {sendConfirmationMessage, sendDescriptionMessage , sendAddTitleMessage} = require('../../whatsapp/sendSupportMessage');
-const { sendToQueue } = require('../rabbitMQ/service/dbService/dbWppService');
+const { AddqueuedbRegister } = require('../rabbitMQ/service/dbService/dbWppService');
 
 const SUPPORT_EXPIRATION = 180
 
@@ -25,10 +25,13 @@ const supportService = async (contact, text) => {
             contact.description = (text);
             await sendConfirmationMessage (contact.phoneNumber);
             contact.step = 'completed';
+            await selectattendants(); /* possivel serviço de consulta de atendente. */
+
             await createTicket(contact);
             //TODO: chamar attendente.. chamar um serviço que vai conectar o frontend com o chatbot.. 
-            await sendToQueue(contact); // Enviar para a fila da base de dados            
-            await redis.del(contact.whatsappId);
+            await AddqueuedbRegister(contact); // Enviar para a fila da base de dados.
+         
+            /* await redis.del(contact.whatsappId); */
         }
 
     } catch (error) {

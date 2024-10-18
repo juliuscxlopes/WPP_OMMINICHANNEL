@@ -1,9 +1,8 @@
 // srtc/services/rabbitMQ/service/dbService/dbWppService.js
-
 const { getDBChannel } = require('../../config/rabbitMQ');
 const dbQueue = require('../../config/queues').dbQueue; // Certifique-se de importar corretamente
 
-async function sendToQueue(contact) {
+async function AddqueuedbRegister(contact) {
     try {
         const channel = await getDBChannel();
         
@@ -21,4 +20,4 @@ async function sendToQueue(contact) {
     }
 }
 
-module.exports = { sendToQueue };
+module.exports = { AddqueuedbRegister };

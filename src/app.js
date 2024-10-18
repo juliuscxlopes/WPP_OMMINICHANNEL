@@ -23,9 +23,9 @@ app.listen(port, async () => {
         // Configura as filas e o exchange do RabbitMQ
         await setupQueuesAndExchange();
         console.log('Filas e exchange configurados com sucesso.');
+        processfilaDbContact();
+        consumeAttendantsQueue()
 
-        // Inicia o worker do RabbitMQ
-        processQueue(); // Chama a função para iniciar a fila
     } catch (error) {
         console.error('Erro ao configurar filas e exchange:', error);
     }

@@ -4,7 +4,7 @@ const { getDBChannel } = require('../../rabbitMQ/config/rabbitMQ');
 const { dbQueue } = require('../config/queues');
 const axios = require('axios');
 
-async function processQueue() {
+async function processfilaDbContact() {
     try {
         const channel = await getDBChannel();
         await channel.assertQueue(dbQueue.name, dbQueue.options);
@@ -33,4 +33,4 @@ async function processQueue() {
     }
 }
 
-module.exports = { processQueue };
+module.exports = { processfilaDbContact };

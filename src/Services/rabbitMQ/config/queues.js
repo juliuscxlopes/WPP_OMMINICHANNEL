@@ -7,11 +7,12 @@ module.exports = {
             durable: true, 
         },
     },
-    // Caso precise de mais filas, você pode adicioná-las aqui
-    anotherQueue: {
-        name: 'anotherQueue',
+
+    attendantsQueue: {  // Fila de atendentes
+        name: 'attendantsQueue',
         options: {
             durable: true,
         },
     },
 };
+
