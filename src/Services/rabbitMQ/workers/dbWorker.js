@@ -1,4 +1,4 @@
-// srtc/services/rabbitMQ/workers/dbworker.js
+/* // srtc/services/rabbitMQ/workers/dbworker.js
 
 const { getRabbitMQChannel } = require('../config/rabbitMQ');
 const { dbQueue } = require('../config/queues');
@@ -68,3 +68,4 @@ async function processQueue() {
 }
 
 module.exports = { processQueue };
+ */
