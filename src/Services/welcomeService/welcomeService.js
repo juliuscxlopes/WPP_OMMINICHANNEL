@@ -21,6 +21,7 @@ const welcomeService = async (contact, text) => {
               console.log('Contato integrado com sucesso! Informações atualizadas no Redis.');
               contact.step = 'supportService';
               contact.service = 'Support';
+              await supportService(contact, text);
               await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', WELCOME_EXPIRATION);
           } else {
               console.log('Nenhum contato correspondente ao CNPJ encontrado no Redis.');

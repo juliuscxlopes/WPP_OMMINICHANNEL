@@ -5,27 +5,22 @@ const {sendConfirmationMessage, sendDescriptionMessage , sendAddTitleMessage} = 
 
 const SUPPORT_EXPIRATION = 180
 
-const supportService = async (req, res, next) => {
-  const { type } = req.processedData;
-
-  if (type === 'message') {
-    const { contact, text } = req.processedData;
-    
+const supportService = async (contact, text) => {    
     try {
       switch (contact.step) {
           case 'supportService':
               await sendAddTitleMessage(contact.phoneNumber);
-              contact.step = 'awaitTitle';
+              contact.step = 'Title';
               await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
             break;
-          case 'awaitTitle':
+          case 'Title':
             contact.title = (text);
             await sendDescriptionMessage(contact.phoneNumber);
-            contact.step = 'awaitSuport';
+            contact.step = 'Description';
             await redis.set(contact.whatsappId, JSON.stringify(contact), 'EX', SUPPORT_EXPIRATION);
             break;
 
-          case 'awaitSuport':
+          case 'Description':
             contact.description = (text);
             await sendConfirmationMessage (contact.phoneNumber);
             contact.step = 'completed';
@@ -41,12 +36,6 @@ const supportService = async (req, res, next) => {
     } catch (error) {
       console.error('Serviço de suporte falhou', error);
     }
-  } else if (type === 'status') {
-    const { id, status } = req.processedData;
-    console.log(`Message ID: ${id}, Status: ${status}`);
-  }
-
-  res.sendStatus(200);
-};
+  } 
 
 module.exports =  supportService;
