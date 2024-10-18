@@ -30,5 +30,5 @@ async function emailExists(email) {
     }
 }
 
-// Exporta as funções
+
 module.exports = { validateEmail , emailExists };

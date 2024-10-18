@@ -3,21 +3,20 @@ require('dotenv').config();
 
 const createTicket = async (contact) => {
   const apiKey = process.env.MILLDESK_API_KEY;
-  const title = contact.title;
   const email = contact.email;
+  const title = contact.title;
   const description = contact.description;
-  const additionalInfo = `\r\n\r\nInformações do Contato:\r\n` +
-  `Chamado aberto por: ${contact.name}\r\n` +
+  const additionalInfo = 
+  `Chamado aberto por: ${contact.nameContact}\r\n` +
   `Telefone da Abertura: ${contact.phoneNumber}\r\n` +
-  `Local: ${contact.location}\r\n` +
-  `Responsável: ${contact.responsavel}\r\n` +
-  `Contato Responsável: ${contact.contato_responsavel}`;
-
-
+  `Empresa: ${contact.name}\r\n` +
+  `CNPJ: ${contact.CNPJ}\r\n`;
 
   const fullDescription = `${description}${additionalInfo}`;
   
   const url = `https://v1.milldesk.com/api/${apiKey}/addTicket?email=${email}&title=${title}&description=${fullDescription}`;
+
+  console.log(fullDescription);
 
   try {
     const response = await axios.get(url);
