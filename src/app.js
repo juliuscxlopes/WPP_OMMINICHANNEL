@@ -5,6 +5,7 @@ const webhookRoutes = require('./routes/webhookRoutes');
 // Importa as funções para configurar RabbitMQ
 const {setupQueuesAndExchange } = require('./Services/rabbitMQ/config/exchange');
 const { processfilaDbContact } = require('./Services/rabbitMQ/workers/dbWorker');
+const { consumeAttendantsQueue } = require('./Services/rabbitMQ/workers/dbSelectAttendants');
 
 dotenv.config();
 

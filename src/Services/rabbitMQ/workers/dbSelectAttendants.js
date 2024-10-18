@@ -26,4 +26,4 @@ async function consumeAttendantsQueue() {
     });
 }
 
-consumeAttendantsQueue();
+module.exports = { consumeAttendantsQueue };
