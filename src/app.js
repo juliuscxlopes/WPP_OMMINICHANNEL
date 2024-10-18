@@ -4,7 +4,7 @@ const webhookRoutes = require('./routes/webhookRoutes');
 
 // Importa as funções para configurar RabbitMQ
 const {setupQueuesAndExchange } = require('./Services/rabbitMQ/config/exchange');
-const { processQueue } = require('./Services/rabbitMQ/workers/dbWorker');
+const { processfilaDbContact } = require('./Services/rabbitMQ/workers/dbWorker');
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ app.listen(port, async () => {
         await setupQueuesAndExchange();
         console.log('Filas e exchange configurados com sucesso.');
         processfilaDbContact();
-        consumeAttendantsQueue()
+        consumeAttendantsQueue();
 
     } catch (error) {
         console.error('Erro ao configurar filas e exchange:', error);
