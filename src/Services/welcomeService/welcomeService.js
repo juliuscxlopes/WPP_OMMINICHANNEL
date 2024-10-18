@@ -4,6 +4,7 @@ const sendGreetingMessage = require('../../whatsapp/sendGreetingMessage');
 const { sendCNPJMessage, sendInvalidCNPJMessage } = require('../../whatsapp/sendCNPJMessage');
 const { validateCNPJ } = require('../../utils/validationCNPJ');
 const { integrateContact } = require('../welcomeService/integrateContact')
+const supportService = require('../supportService/supportService');
 
 
 const WELCOME_EXPIRATION = 180;
